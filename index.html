@@ -45,7 +45,6 @@ input,select,textarea{font-family:inherit;font-size:14px;color:var(--t1);}
 }
 .hamburger{font-size:22px;color:var(--t2);padding:4px;border-radius:6px;line-height:1;}
 .hamburger:hover{background:rgba(140,75,103,.08);}
-.logo{width:44px;height:34px;border-radius:50%/44%;background:radial-gradient(circle at 50% 38%,#ff3b30,#c81f18);
   display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:15px;
   letter-spacing:1px;box-shadow:0 1px 2px rgba(0,0,0,.25);border:2px solid #ffd9a0;}
 .brand{font-weight:700;font-size:20px;color:var(--t1);letter-spacing:.5px;}
@@ -534,9 +533,9 @@ table.grid tbody tr.selected{background:#f7eef2;}
     <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
       <select class="select" id="rpCo" style="width:180px;" onchange="renderReport()">
         <option value="">請選擇公司別</option>
-        <option>長城企業股份有限公司</option>
-        <option>長城企業(歸仁)</option>
-        <option>食品股份有限公司</option>
+        <option>大成長城企業股份有限公司</option>
+        <option>大成長城企業(歸仁)</option>
+        <option>大成食品股份有限公司</option>
       </select>
       <select class="select" id="rpCc" style="width:190px;" onchange="renderReport()">
         <option value="">請選擇成本中心</option>
@@ -688,7 +687,7 @@ table.grid tbody tr.selected{background:#f7eef2;}
         <table class="form-kv"><tbody>
           <tr><th>申請單號</th><td colspan="3">送出後產生</td></tr>
           <tr><th>填單日期</th><td>2026/01/04 12:34:56</td><th>填單人員</th><td>10011274-林益凡</td></tr>
-          <tr><th>申請人員</th><td>10011274-林益凡</td><th>公司代碼</th><td>長城企業股份有限公司</td></tr>
+          <tr><th>申請人員</th><td>10011274-林益凡</td><th>公司代碼</th><td>大成長城企業股份有限公司</td></tr>
           <tr><th>成本中心</th><td>1600-資訊處</td><th>領用日期</th><td><input type="date" id="er-date" value="2026-08-27"></td></tr>
           <tr><th>聯絡電話/分機</th><td><input id="er-tel" value="#5311"></td><th>備註</th><td>-</td></tr>
         </tbody></table>
@@ -715,7 +714,7 @@ table.grid tbody tr.selected{background:#f7eef2;}
         <table class="form-kv"><tbody>
           <tr><th>申請單號</th><td colspan="3">送出後產生</td></tr>
           <tr><th>填單日期</th><td>2026/01/04 12:34:56</td><th>填單人員</th><td>10011274-林益凡</td></tr>
-          <tr><th>申請人員</th><td>10011274-林益凡</td><th>公司代碼</th><td><select class="select" style="max-width:260px;"><option>長城企業股份有限公司</option><option>大成長城企業(歸仁)</option><option>大成食品股份有限公司</option></select></td></tr>
+          <tr><th>申請人員</th><td>10011274-林益凡</td><th>公司代碼</th><td><select class="select" style="max-width:260px;"><option>大成長城企業股份有限公司</option><option>大成長城企業(歸仁)</option><option>大成食品股份有限公司</option></select></td></tr>
           <tr><th>成本中心</th><td><select class="select" style="max-width:200px;"><option>1600 資訊處</option><option>1700 管理處</option></select></td><th>領用時間</th><td><input type="date" value="2026-08-27"></td></tr>
           <tr><th>聯絡電話/分機</th><td><input value="#5311"></td><th>備註</th><td>-</td></tr>
         </tbody></table>
@@ -832,7 +831,7 @@ let cart=[
 ];
 let cartStage='edit';
 
-const COMPANIES=['長城企業股份有限公司','長城企業(歸仁)','食品股份有限公司'];
+const COMPANIES=['大成長城企業股份有限公司','大成長城企業(歸仁)','大成食品股份有限公司'];
 const OVERVIEW=(()=>{const st=['未確認','未確認','未確認','未確認','未確認','已確認','退回','已領用','取消','已領用'];
   return st.map((s,i)=>({no:'OSR2026081000'+(i+1),user:['黃維興','梁思齊','張曉熙','陳俊凱','許昕元'][i%5],
     empno:'1001000'+(i%3+1),date:'2026/08/10',company:COMPANIES[i%3],cc:'1600-資訊處',tel:'#123',
@@ -1007,7 +1006,7 @@ function renderCartInfo(){
         <tr><th>填單人員</th><td>10011275 洪慕藍</td></tr>
         <tr><th>申請人員</th><td>10011274 林益凡</td></tr>
         <tr><th>領用日期</th><td>2026/08/27</td></tr>
-        <tr><th>公司代碼</th><td>長城企業股份有限公司</td></tr>
+        <tr><th>公司代碼</th><td>大成長城企業股份有限公司</td></tr>
         <tr><th>聯絡電話/分機</th><td>#5311</td></tr>
         <tr><th>備註</th><td>-</td></tr></tbody></table>
       <div style="border-top:1px solid var(--hair);margin:6px 0 12px;"></div>
@@ -1067,7 +1066,7 @@ function viewReq(no,name){
       <table class="form-kv"><tbody>
         <tr><th>申請單號</th><td colspan="3">${no}</td></tr>
         <tr><th>填單日期</th><td>2026/01/04 12:34:56</td><th>填單人員</th><td>10011274-林益凡</td></tr>
-        <tr><th>申請人員</th><td>10011274-林益凡</td><th>公司代碼</th><td>長城企業股份有限公司</td></tr>
+        <tr><th>申請人員</th><td>10011274-林益凡</td><th>公司代碼</th><td>大成長城企業股份有限公司</td></tr>
         <tr><th>成本中心</th><td>1600-資訊處</td><th>領用日期</th><td>2026/01/20</td></tr>
         <tr><th>聯絡電話/分機</th><td>#5311</td><th>備註</th><td>-</td></tr>
       </tbody></table>
@@ -1179,7 +1178,7 @@ function openAddOrder(){
 function aoStep(btn,d){const inp=btn.parentElement.querySelector('input');inp.value=Math.max(1,(parseInt(inp.value)||1)+d);}
 function submitAddOrder(){
   OVERVIEW.unshift({no:'OSR2026082700'+(Math.floor(Math.random()*9)+1),user:'林益凡',empno:'10011274',
-    date:'2026/08/27',company:'長城企業股份有限公司',cc:'1600-資訊處',tel:'#5311',
+    date:'2026/08/27',company:'大成長城企業股份有限公司',cc:'1600-資訊處',tel:'#5311',
     time:'2026/08/27 12:34',status:'未確認',reason:''});
   closeModal('m-addorder');renderOverview();toast('補單已送出','ok');
 }
@@ -1289,7 +1288,7 @@ function clearImport(){document.getElementById('importChip').style.display='none
 function doImport(){closeModal('m-import');toast('批量匯入完成','ok');addRows.push({sku:'IMP-01',name:'匯入品項範例',cat:'紙品',unit:'包',init:100,safe:20,shelf:'上架',img:false});renderAddTable();}
 
 /* ================= 月報表（統計報表）================= */
-const RCO='長城企業股份有限公司';
+const RCO='大成長城企業股份有限公司';
 const REPORT=[
   {co:RCO,cc:'1600-資訊處',cat:'書寫',sku:'PEN-BL-01',name:'原子筆(藍) 0.5mm',qty:200},
   {co:RCO,cc:'1600-資訊處',cat:'書寫',sku:'PEN-BK-02',name:'原子筆(黑) 0.5mm',qty:100},
