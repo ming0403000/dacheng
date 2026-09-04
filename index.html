@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>大成智慧辦公室平台 · 文具領用系統（原型）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ============ 大成 Pale Rose 設計 token ============ */
+:root{
+  --rose-50:#F8F2F4; --rose-100:#EEDDE4; --rose-200:#DEC1CE; --rose-300:#CCA0B4;
+  --rose-400:#BA809A; --rose-500:#A66080; --rose-600:#8C4B67; --rose-700:#6E3B51;
+  --ink:#1E2939;
+  --t1:rgba(30,41,57,1); --t2:rgba(30,41,57,.74); --t3:rgba(30,41,57,.52); --t4:rgba(30,41,57,.38);
+  --disabled:#99A1AF;
+  --border:#364153; --hair:rgba(54,65,83,.28); --hair-strong:rgba(54,65,83,.55);
+  --green:#16a34a; --green-d:#15803d; --red:#e5484d; --red-d:#dc2626;
+  --amber:#e0a400; --blue:#3b6fe0; --gray-dot:#9aa0ab;
+  --shadow-modal:0 10px 28px -8px rgba(140,75,103,.16);
+  --shadow-card:0 1px 2px rgba(140,75,103,.06);
+  --radius-s:4px; --radius-m:8px; --radius-l:12px;
+  --header-h:64px; --tabs-h:57px;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  font-family:"Rubik","Noto Sans TC",-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;
+  color:var(--t1); background:#f0f0f2; font-size:15px; line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
+input,select,textarea{font-family:inherit;font-size:14px;color:var(--t1);}
+::-webkit-scrollbar{width:8px;height:8px;}
+::-webkit-scrollbar-thumb{background:var(--rose-200);border-radius:8px;}
+::-webkit-scrollbar-track{background:transparent;}
+
+/* ============ Header ============ */
+.app-header{
+  position:sticky;top:0;z-index:40;height:var(--header-h);
+  display:flex;align-items:center;gap:16px;padding:0 24px;
+  background:linear-gradient(96deg,#f6f5f6 0%,#f1e7ec 55%,#e9d9e0 100%);
+  border-bottom:1px solid var(--hair);
+}
+.hamburger{font-size:22px;color:var(--t2);padding:4px;border-radius:6px;line-height:1;}
+.hamburger:hover{background:rgba(140,75,103,.08);}
+.logo{width:44px;height:34px;border-radius:50%/44%;background:radial-gradient(circle at 50% 38%,#ff3b30,#c81f18);
+  display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:15px;
+  letter-spacing:1px;box-shadow:0 1px 2px rgba(0,0,0,.25);border:2px solid #ffd9a0;}
+.brand{font-weight:700;font-size:20px;color:var(--t1);letter-spacing:.5px;}
+.header-right{margin-left:auto;display:flex;align-items:center;gap:20px;}
+.plant-select{display:flex;align-items:center;gap:8px;color:var(--t2);font-size:14px;}
+.plant-select select{
+  padding:8px 30px 8px 12px;border:1px solid var(--hair-strong);border-radius:var(--radius-m);
+  background:#fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%238C4B67' stroke-width='1.6'><path d='M4 6l4 4 4-4'/></svg>") no-repeat right 8px center;
+  -webkit-appearance:none;appearance:none;min-width:150px;cursor:pointer;color:var(--t1);}
+.bell{position:relative;font-size:20px;color:var(--t2);padding:4px;}
+.bell .badge{position:absolute;top:-2px;right:-4px;min-width:16px;height:16px;padding:0 4px;
+  background:var(--red-d);color:#fff;border-radius:10px;font-size:11px;line-height:16px;text-align:center;font-weight:600;}
+.user{display:flex;align-items:center;gap:8px;color:var(--t1);font-size:14px;}
+.user .avatar{width:26px;height:26px;border-radius:50%;background:#cfd3da;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;}
+.caret{color:var(--t3);font-size:12px;}
+
+/* ============ 主選單 Primary Tabs ============ */
+.primary-tabs{
+  position:sticky;top:var(--header-h);z-index:35;height:var(--tabs-h);
+  display:flex;align-items:stretch;gap:6px;padding:0 24px;background:#fff;border-bottom:1px solid var(--hair);
+}
+.primary-tabs .ptab{
+  display:flex;align-items:center;padding:0 14px;font-size:15px;color:var(--t2);
+  border-bottom:2px solid transparent;margin-bottom:-1px;position:relative;font-weight:500;
+}
+.primary-tabs .ptab:hover{color:var(--rose-600);}
+.primary-tabs .ptab.active{color:var(--rose-600);border-bottom-color:var(--rose-600);font-weight:700;}
+
+/* ============ 版面 ============ */
+main{max-width:1464px;margin:0 auto;padding:16px 24px 60px;}
+.screen{display:none;}
+.screen.active{display:block;}
+.page-title{font-size:20px;font-weight:700;color:var(--t1);margin:8px 0 16px;display:flex;align-items:center;gap:10px;}
+.page-title .back{font-size:20px;color:var(--t2);padding:2px 6px;border-radius:6px;}
+.page-title .back:hover{background:rgba(140,75,103,.08);}
+.row-between{display:flex;align-items:center;justify-content:space-between;gap:16px;}
+
+/* ---- 篩選 pill tabs ---- */
+.filter-tabs{display:inline-flex;align-items:center;gap:2px;background:#fff;border:1px solid var(--hair);
+  border-radius:999px;padding:4px;}
+.filter-tabs button{padding:6px 16px;border-radius:999px;font-size:14px;color:var(--t2);font-weight:500;}
+.filter-tabs button.active{background:var(--rose-500);color:#fff;box-shadow:0 1px 3px rgba(140,75,103,.3);}
+.filter-tabs button:not(.active):hover{color:var(--rose-600);}
+
+/* ---- 文字動作連結 ---- */
+.act-link{color:var(--rose-500);font-size:14px;display:inline-flex;align-items:center;gap:4px;padding:2px 6px;border-radius:6px;font-weight:500;}
+.act-link:hover{background:var(--rose-50);color:var(--rose-600);}
+.act-link.muted{color:var(--t3);}
+.act-link.muted:hover{color:var(--t2);background:rgba(54,65,83,.06);}
+
+/* ---- 按鈕 ---- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 18px;border-radius:var(--radius-m);
+  font-size:14px;font-weight:500;border:1px solid transparent;transition:filter .12s,background .12s;}
+.btn-primary{background:var(--rose-600);color:#fff;}
+.btn-primary:hover{filter:brightness(1.08);}
+.btn-outline{background:#fff;color:var(--rose-600);border-color:var(--rose-400);}
+.btn-outline:hover{background:var(--rose-50);}
+.btn-green{background:var(--green);color:#fff;}
+.btn-green:hover{background:var(--green-d);}
+.btn-red{background:var(--red-d);color:#fff;}
+.btn-red:hover{filter:brightness(1.06);}
+.btn-ghost{color:var(--t2);}
+.btn-ghost:hover{background:rgba(140,75,103,.07);color:var(--rose-600);}
+.btn[disabled]{background:#e5e7eb;color:#9aa0ab;cursor:not-allowed;border-color:transparent;filter:none;}
+.toolbar-act{display:inline-flex;align-items:center;gap:6px;color:var(--t2);font-size:14px;padding:8px 10px;border-radius:6px;font-weight:500;}
+.toolbar-act:hover{color:var(--rose-600);background:var(--rose-50);}
+.toolbar-act .ic{color:var(--rose-500);}
+
+/* ---- 狀態 pill ---- */
+.pill{display:inline-flex;align-items:center;gap:6px;padding:2px 10px;border-radius:999px;font-size:13px;font-weight:500;white-space:nowrap;}
+.pill .dot{width:7px;height:7px;border-radius:50%;flex:none;}
+.pill.s-gray{color:var(--t2);} .pill.s-gray .dot{background:var(--gray-dot);}
+.pill.s-amber{color:#8a6400;} .pill.s-amber .dot{background:var(--amber);}
+.pill.s-red{color:#b42318;} .pill.s-red .dot{background:var(--red-d);}
+.pill.s-green{color:#1a7a3d;} .pill.s-green .dot{background:var(--green);}
+.pill.s-blue{color:#294f9e;} .pill.s-blue .dot{background:var(--blue);}
+.pill.solid.s-amber{background:#fdf3d3;} .pill.solid.s-red{background:#fde7e6;}
+.pill.solid.s-green{background:#e4f5ea;} .pill.solid.s-blue{background:#e6edfb;} .pill.solid.s-gray{background:#eef0f2;}
+
+/* ---- 表格 ---- */
+.panel{background:#fff;border:1px solid var(--hair);border-radius:var(--radius-m);overflow:hidden;box-shadow:var(--shadow-card);}
+table.grid{width:100%;border-collapse:collapse;font-size:14px;}
+table.grid thead th{background:var(--rose-200);color:var(--t1);font-weight:600;text-align:left;
+  padding:12px 14px;white-space:nowrap;position:sticky;top:0;}
+table.grid thead th .sort,table.grid thead th .search{color:var(--rose-600);margin-left:4px;font-size:13px;cursor:pointer;}
+table.grid tbody td{padding:10px 14px;border-bottom:1px solid var(--hair);color:var(--t2);white-space:nowrap;}
+table.grid tbody tr:nth-child(even){background:var(--rose-50);}
+table.grid tbody tr:hover{background:var(--rose-100);}
+table.grid tbody tr.selected{background:#f7eef2;}
+.num-red{color:var(--red-d);font-weight:500;}
+.chk{width:16px;height:16px;accent-color:var(--rose-600);cursor:pointer;vertical-align:middle;}
+.eye{color:var(--rose-500);cursor:pointer;font-size:16px;}
+.table-scroll{overflow:auto;}
+
+/* ---- pagination ---- */
+.pagination{display:flex;align-items:center;gap:16px;padding:12px 16px;font-size:14px;color:var(--t2);border-top:1px solid var(--hair);flex-wrap:wrap;}
+.pagination .pages{display:flex;align-items:center;gap:4px;}
+.pagination .pages button{width:28px;height:28px;border-radius:6px;color:var(--t2);}
+.pagination .pages button.active{border:1px solid var(--rose-500);color:var(--rose-600);}
+.pagination .pages button:hover:not(.active){background:var(--rose-50);}
+.pagination .right{margin-left:auto;display:flex;align-items:center;gap:16px;}
+.pagination select,.pagination input{padding:5px 8px;border:1px solid var(--hair-strong);border-radius:6px;}
+.pagination input{width:56px;}
+
+/* ---- form ---- */
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:14px;color:var(--t2);margin-bottom:6px;}
+.field label .req{color:var(--red-d);margin-right:2px;}
+.input,.select,.textarea{width:100%;padding:9px 12px;border:1px solid var(--hair-strong);border-radius:var(--radius-m);background:#fff;}
+.input:focus,.select:focus,.textarea:focus{outline:none;border-color:var(--rose-500);box-shadow:0 0 0 3px rgba(166,96,128,.12);}
+.select{-webkit-appearance:none;appearance:none;
+  background:#fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%238C4B67' stroke-width='1.6'><path d='M4 6l4 4 4-4'/></svg>") no-repeat right 10px center;padding-right:32px;cursor:pointer;}
+.textarea{min-height:60px;resize:vertical;}
+
+/* ---- 數量器 ---- */
+.stepper{display:inline-flex;align-items:center;border:1px solid var(--hair-strong);border-radius:var(--radius-m);overflow:hidden;}
+.stepper button{width:30px;height:32px;font-size:16px;color:var(--t2);background:#fafafa;}
+.stepper button:hover{background:var(--rose-50);color:var(--rose-600);}
+.stepper input{width:44px;height:32px;border:none;border-left:1px solid var(--hair);border-right:1px solid var(--hair);text-align:center;-moz-appearance:textfield;}
+.stepper input::-webkit-outer-spin-button,.stepper input::-webkit-inner-spin-button{-webkit-appearance:none;}
+.input[type=number]{-moz-appearance:textfield;appearance:textfield;}
+.input[type=number]::-webkit-outer-spin-button,.input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+.stepper.over{border-color:var(--red-d);}
+.stepper.over input{color:var(--red-d);font-weight:600;}
+
+/* ---- 讀取表(唯讀資訊) ---- */
+.kv{width:100%;border-collapse:collapse;font-size:14px;border:1px solid var(--hair-strong);border-radius:var(--radius-m);overflow:hidden;}
+.kv th{background:var(--rose-200);color:var(--t1);font-weight:500;text-align:center;padding:13px 16px;width:120px;border:1px solid var(--hair);white-space:nowrap;vertical-align:middle;}
+.kv td{padding:12px 16px;border:1px solid var(--hair);color:var(--t2);vertical-align:middle;}
+
+/* ============ Modal ============ */
+.modal-mask{position:fixed;inset:0;background:rgba(30,20,26,.28);display:none;align-items:flex-start;justify-content:center;z-index:60;padding:24px 16px;overflow:auto;}
+.modal-mask.open{display:flex;}
+.modal{background:#fff;border-radius:var(--radius-l);box-shadow:var(--shadow-modal);width:100%;max-width:560px;margin:auto;overflow:hidden;animation:pop .16s ease;}
+.modal.wide{max-width:1040px;}
+@keyframes pop{from{transform:translateY(6px);opacity:0;}to{transform:none;opacity:1;}}
+.modal-head{height:56px;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;
+  box-shadow:0 1px 0 rgba(0,0,0,.05);}
+.modal-head h3{margin:0;font-size:16px;font-weight:600;letter-spacing:.2px;}
+.modal-head .acts{display:flex;gap:8px;align-items:center;}
+.modal-head .x{font-size:20px;color:var(--t3);padding:4px 8px;border-radius:8px;}
+.modal-head .x:hover{background:rgba(0,0,0,.05);color:var(--t1);}
+.modal-body{padding:18px 20px 22px;background:var(--rose-50);}
+.modal .btn-mini{padding:6px 16px;border-radius:8px;font-size:14px;font-weight:600;}
+
+/* ---- toast ---- */
+#toast-wrap{position:fixed;top:76px;left:50%;transform:translateX(-50%);z-index:80;display:flex;flex-direction:column;gap:8px;align-items:center;}
+.toast{background:#1f2733;color:#fff;padding:10px 18px;border-radius:999px;font-size:14px;box-shadow:0 6px 20px rgba(0,0,0,.2);
+  display:flex;align-items:center;gap:8px;animation:toastIn .2s ease;}
+.toast.ok{background:#1a7a3d;} .toast.warn{background:#b7791f;} .toast.err{background:#c0362c;}
+@keyframes toastIn{from{transform:translateY(-8px);opacity:0;}to{transform:none;opacity:1;}}
+
+/* ---- 領用申請 購物頁 ---- */
+.apply-layout{display:grid;grid-template-columns:220px 1fr;gap:20px;align-items:start;}
+.cat-list{background:#fff;border:1px solid var(--hair);border-radius:var(--radius-m);padding:8px;}
+.cat-list .cat{display:flex;align-items:center;gap:6px;padding:10px 12px;border-radius:6px;color:var(--t2);font-size:14px;cursor:pointer;}
+.cat-list .cat.parent{font-weight:600;color:var(--t1);}
+.cat-list .cat.active{background:var(--rose-50);color:var(--rose-600);font-weight:600;}
+.cat-list .cat:hover:not(.active){background:#faf7f8;}
+.shop-panel{background:var(--rose-50);border:1px solid var(--hair);border-radius:var(--radius-l);padding:18px;}
+.shop-head{display:flex;align-items:center;gap:14px;margin-bottom:16px;flex-wrap:wrap;}
+.shop-head .cat-name{font-size:17px;font-weight:700;}
+.shop-head .count{color:var(--t3);font-size:14px;}
+.search-box{flex:1;min-width:200px;max-width:360px;position:relative;}
+.search-box input{width:100%;padding:9px 12px 9px 34px;border:1px solid var(--hair-strong);border-radius:var(--radius-m);background:#fff;}
+.search-box .mag{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--t3);}
+.sort-box{display:flex;align-items:center;gap:6px;color:var(--t2);font-size:14px;padding:8px 12px;background:#fff;border:1px solid var(--hair-strong);border-radius:var(--radius-m);cursor:pointer;}
+.product-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.pcard{background:#fff;border:1px solid var(--hair);border-radius:var(--radius-m);padding:14px;display:flex;flex-direction:column;}
+.pcard .pimg{height:150px;border:1px solid var(--hair);border-radius:var(--radius-s);display:flex;align-items:center;justify-content:center;margin-bottom:12px;background:#fff;}
+.pcard .pname{font-weight:600;color:var(--t1);font-size:15px;}
+.pcard .psku{color:var(--t3);font-size:13px;margin:2px 0 10px;}
+.pcard .pstock{font-size:13px;margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+.pcard .pstock .dot{width:7px;height:7px;border-radius:50%;flex:none;}
+.pcard .prow{display:flex;align-items:center;gap:10px;margin-top:auto;}
+.stock-normal{color:#1a7a3d;} .stock-normal .dot{background:var(--green);}
+.stock-low{color:#8a6400;} .stock-low .dot{background:var(--amber);}
+.stock-out{color:#b42318;} .stock-out .dot{background:var(--red-d);}
+.stock-over{color:var(--red-d);}
+.view-cart{color:var(--rose-600);font-weight:600;display:inline-flex;align-items:center;gap:6px;font-size:15px;}
+.view-cart:hover{color:var(--rose-700);}
+.view-cart .cart-badge{background:var(--rose-600);color:#fff;border-radius:999px;font-size:12px;min-width:18px;height:18px;padding:0 5px;display:inline-flex;align-items:center;justify-content:center;}
+
+/* ---- 購物車 ---- */
+.cart-layout{display:grid;grid-template-columns:1fr 380px;gap:20px;align-items:start;}
+.cart-list-panel{background:#fff;border:1px solid var(--hair);border-radius:var(--radius-m);overflow:hidden;}
+.cart-list-head{background:var(--rose-200);padding:14px 16px;font-weight:600;display:flex;align-items:center;gap:14px;}
+.cart-item{display:grid;grid-template-columns:44px 40px 64px 1fr auto auto;align-items:center;gap:12px;padding:16px;border-bottom:1px solid var(--hair);min-height:96px;}
+.cart-item.empty{color:var(--t4);}
+.cart-item .cimg{width:56px;height:56px;border:1px solid var(--hair);border-radius:6px;display:flex;align-items:center;justify-content:center;background:#fff;}
+.cart-item .cname{font-weight:600;color:var(--t1);}
+.cart-item .csku{color:var(--t3);font-size:13px;}
+.cart-item .cwarn{grid-column:4 / -1;color:var(--red-d);font-size:13px;margin-top:6px;display:flex;align-items:center;gap:6px;}
+.trash{color:var(--red-d);font-size:18px;padding:4px;border-radius:6px;}
+.trash:hover{background:#fde7e6;}
+.info-panel{background:#fff;border:1px solid var(--hair);border-radius:var(--radius-m);overflow:hidden;display:flex;flex-direction:column;}
+.info-panel .ip-head{background:var(--rose-200);padding:14px 16px;font-weight:600;}
+.info-panel .ip-body{padding:16px;}
+.item-summary{background:var(--rose-50);border:1px solid var(--hair);border-radius:var(--radius-m);padding:12px 14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.item-summary .qty{color:var(--red-d);font-weight:600;}
+.stat-line{display:flex;justify-content:space-between;padding:6px 2px;font-size:15px;}
+.info-foot{padding:14px 16px;border-top:1px solid var(--hair);display:flex;gap:12px;}
+.info-foot .btn{flex:1;}
+
+/* ---- 我的領用 ---- */
+.sec-label{font-size:17px;font-weight:700;margin:20px 0 12px;}
+.req-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;}
+.req-card{background:#fff;border:1px solid var(--hair);border-radius:var(--radius-m);overflow:hidden;box-shadow:var(--shadow-card);}
+.req-card .rc-body{padding:16px;}
+.req-card .rc-no{color:var(--t3);font-size:13px;}
+.req-card .rc-name{font-size:17px;font-weight:700;margin:4px 0;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.req-card .rc-date{color:var(--t3);font-size:13px;}
+.req-card .rc-foot{display:flex;border-top:1px solid var(--hair);}
+.req-card .rc-foot .act-link{flex:1;justify-content:center;padding:12px;border-radius:0;}
+.req-card .rc-foot .act-link+.act-link{border-left:1px solid var(--hair);}
+.expand-row td{background:#fff !important;padding:0 !important;}
+.sub-table{width:100%;border-collapse:collapse;}
+.sub-table th{background:var(--rose-100);color:var(--t2);font-weight:500;text-align:left;padding:10px 14px 10px 40px;font-size:13px;}
+.sub-table td{padding:10px 14px 10px 40px;border-bottom:1px solid var(--hair);color:var(--t2);font-size:13px;}
+.exp-btn{width:22px;height:22px;border:1px solid var(--hair-strong);border-radius:5px;color:var(--t2);font-size:14px;line-height:1;}
+.exp-btn:hover{border-color:var(--rose-500);color:var(--rose-600);}
+.empty-state{background:#fff;border:1px dashed var(--hair-strong);border-radius:var(--radius-m);padding:48px;text-align:center;color:var(--t3);}
+.empty-state .em-ic{font-size:40px;opacity:.4;margin-bottom:8px;}
+
+/* ---- 統計卡 ---- */
+.stat-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;max-width:640px;}
+.stat-card{background:#fff;border:1px solid var(--hair);border-radius:var(--radius-m);padding:14px 16px;box-shadow:var(--shadow-card);}
+.stat-card .lbl{color:var(--t3);font-size:13px;margin-bottom:6px;}
+.stat-card .val{font-size:26px;font-weight:700;color:var(--t1);}
+.stat-card.alert .val{color:var(--rose-600);}
+
+/* ---- 新增品項 editable ---- */
+.edit-table td{padding:12px 10px;border-bottom:1px solid var(--hair);vertical-align:middle;}
+.edit-table .input,.edit-table .select{padding:7px 10px;font-size:13px;}
+.upload-btn{border:1px solid var(--rose-400);color:var(--rose-600);border-radius:6px;padding:6px 12px;font-size:13px;display:inline-flex;gap:5px;align-items:center;background:#fff;}
+.upload-btn:hover{background:var(--rose-50);}
+.thumb{width:48px;height:36px;object-fit:contain;border:1px solid var(--hair);border-radius:4px;background:#fff;}
+.radio-inline{display:inline-flex;gap:16px;align-items:center;font-size:14px;color:var(--t2);}
+.radio-inline label{display:inline-flex;gap:5px;align-items:center;cursor:pointer;}
+.radio-inline input{accent-color:var(--rose-600);}
+.dropzone{border:2px dashed var(--rose-300);border-radius:var(--radius-m);background:#fff;padding:32px;text-align:center;color:var(--t2);cursor:pointer;transition:background .12s;}
+.dropzone:hover{background:var(--rose-50);}
+.dropzone .dz-ic{font-size:30px;color:var(--rose-500);}
+.dropzone .dz-t{font-weight:700;margin:8px 0 2px;color:var(--t1);}
+.file-chip{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding:10px 12px;background:#fff;border:1px solid var(--hair);border-radius:8px;font-size:14px;}
+
+/* ---- 編輯預約 modal ---- */
+.sec-block{border:1px solid var(--hair-strong);border-radius:8px;overflow:hidden;background:#fff;}
+.sec-block+.sec-block{margin-top:16px;}
+.sec-bar{background:var(--rose-600);color:#fff;font-weight:700;font-size:15px;padding:12px 16px;letter-spacing:.5px;}
+.form-kv{width:100%;border-collapse:collapse;font-size:14px;}
+.form-kv th{background:var(--rose-100);color:var(--t1);font-weight:500;text-align:left;
+  padding:12px 16px;border-top:1px solid var(--hair);border-right:1px solid var(--hair);white-space:nowrap;width:120px;vertical-align:middle;}
+.form-kv td{padding:9px 16px;border-top:1px solid var(--hair);border-right:1px solid var(--hair);color:var(--t2);vertical-align:middle;}
+.form-kv th:last-child,.form-kv td:last-child{border-right:none;}
+.form-kv input{width:100%;max-width:230px;padding:7px 10px;border:1px solid var(--hair-strong);border-radius:6px;background:#fff;}
+.item-grid{width:100%;border-collapse:collapse;font-size:14px;}
+.item-grid th{background:#fff;color:var(--t1);font-weight:600;text-align:left;padding:12px 14px;
+  border-top:1px solid var(--hair);border-right:1px solid var(--hair);white-space:nowrap;}
+.item-grid td{padding:11px 14px;border-top:1px solid var(--hair);border-right:1px solid var(--hair);color:var(--t2);}
+.item-grid th:last-child,.item-grid td:last-child{border-right:none;}
+
+/* ---- 分類管理 tag editor ---- */
+.form-section-label{font-size:16px;font-weight:700;color:var(--t1);margin:0 0 10px;}
+.tag-box{border:1px solid var(--hair-strong);border-radius:8px;background:var(--rose-50);padding:12px 14px;
+  display:flex;flex-wrap:wrap;gap:10px;align-items:center;min-height:56px;cursor:text;}
+.tag-chip{display:inline-flex;align-items:center;gap:8px;background:var(--rose-100);border:1px solid var(--rose-200);
+  border-radius:8px;padding:7px 12px;font-size:15px;color:var(--t1);}
+.tag-chip .rm{color:var(--t3);cursor:pointer;font-size:14px;line-height:1;}
+.tag-chip .rm:hover{color:var(--red-d);}
+.tag-input{border:none;background:transparent;outline:none;font-size:15px;min-width:150px;flex:1;padding:6px 2px;color:var(--t1);}
+.tag-input::placeholder{color:var(--t3);}
+
+.hint-note{font-size:13px;color:var(--t3);margin:2px 0 12px;}
+@media(max-width:1100px){
+  .product-grid{grid-template-columns:repeat(2,1fr);}
+  .cart-layout{grid-template-columns:1fr;}
+  .stat-cards{max-width:none;}
+}
+@media(max-width:720px){
+  .apply-layout{grid-template-columns:1fr;}
+  .product-grid{grid-template-columns:1fr;}
+  .stat-cards{grid-template-columns:repeat(2,1fr);}
+  .brand{font-size:16px;} .plant-select{display:none;}
+  main{padding:12px 14px 60px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ Header ============ -->
+<header class="app-header">
+  <button class="hamburger" title="選單">&#9776;</button>
+  <div class="logo">大成</div>
+  <div class="brand">智慧辦公室平台</div>
+  <div class="header-right">
+    <div class="plant-select">
+      <span>所在廠區：</span>
+      <select><option>歸仁總公司</option><option>臺北分公司</option><option>臺中廠區</option></select>
+    </div>
+    <button class="bell" title="通知">&#128276;<span class="badge">1</span></button>
+    <div class="user"><span class="avatar">&#128100;</span>林益凡<span class="caret">&#9662;</span></div>
+  </div>
+</header>
+
+<!-- ============ 主選單 ============ -->
+<nav class="primary-tabs" id="primaryTabs">
+  <button class="ptab" data-screen="apply">領用申請</button>
+  <button class="ptab" data-screen="myreq">我的領用</button>
+  <button class="ptab active" data-screen="overview">領用總覽</button>
+  <button class="ptab" data-screen="inventory">庫存管理</button>
+  <button class="ptab" data-screen="report">月報表</button>
+</nav>
+
+<main id="app">
+
+<!-- ===== 領用總覽（管理端主表）===== -->
+<section class="screen" id="screen-overview">
+  <div class="page-title">領用總覽</div>
+  <div class="row-between" style="margin-bottom:14px;">
+    <div class="filter-tabs" id="ovFilter">
+      <button class="active" data-f="all">全部</button>
+      <button data-f="未確認">未確認</button>
+      <button data-f="已確認">已確認</button>
+      <button data-f="已領用">已領用</button>
+      <button data-f="退回">退回</button>
+      <button data-f="取消">取消</button>
+    </div>
+    <div style="display:flex;gap:6px;">
+      <button class="toolbar-act" onclick="openAddOrder()"><span class="ic">&#43;</span>補單</button>
+      <button class="toolbar-act" onclick="openReport()"><span class="ic">&#9998;</span>回報狀態</button>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="table-scroll">
+      <table class="grid" id="ovTable">
+        <thead><tr>
+          <th><input type="checkbox" class="chk" id="ovAll"></th>
+          <th>申請單號</th><th>申請人員 <span class="search">&#128269;</span></th>
+          <th>領用日期 <span class="sort">&#8645;</span></th><th>領用資訊</th>
+          <th>公司代碼</th><th>成本中心</th><th>聯絡電話</th><th>領用時間</th>
+          <th>狀態</th><th>動作</th><th>退回原因</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="pagination">
+      <div class="pages"><button>&#8249;</button><button class="active">1</button><button>2</button><button>3</button><button>4</button><button>5</button><span>…</span><button>10</button><button>&#8250;</button></div>
+      <div class="right"><span>共 100 筆資料</span><select><option>10 條/頁</option><option>20 條/頁</option></select><span>跳頁 <input></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 領用申請（購物頁）===== -->
+<section class="screen" id="screen-apply">
+  <div class="row-between">
+    <div class="page-title">領用申請</div>
+    <button class="view-cart" onclick="go('cart')">&#128722; 查看購物車 <span class="cart-badge" id="cartBadge">0</span></button>
+  </div>
+  <div class="apply-layout">
+    <aside class="cat-list" id="catList"></aside>
+    <div class="shop-panel">
+      <div class="shop-head">
+        <span class="cat-name" id="catName">書寫</span>
+        <span class="count" id="catCount">共 10 項</span>
+        <div class="search-box"><span class="mag">&#128269;</span><input id="prodSearch" placeholder="請輸入品項名稱" oninput="renderProducts()"></div>
+        <div class="sort-box" onclick="toggleSort()">&#8645; 排序：<span id="sortLabel">庫存多到少</span></div>
+      </div>
+      <div class="product-grid" id="productGrid"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 購物車清單 ===== -->
+<section class="screen" id="screen-cart">
+  <div class="page-title"><button class="back" onclick="go('apply')">&#8592;</button>購物車清單</div>
+  <div class="cart-layout">
+    <div class="cart-list-panel">
+      <div class="cart-list-head"><input type="checkbox" class="chk" checked>清單項目</div>
+      <div id="cartItems"></div>
+      <div class="pagination"><div class="pages"><button>&#8249;</button><button class="active">1</button><button>2</button><button>3</button><button>&#8250;</button></div></div>
+    </div>
+    <div class="info-panel">
+      <div class="ip-head">申請資訊</div>
+      <div class="ip-body" id="cartInfoBody"></div>
+      <div class="info-foot" id="cartFoot"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 我的領用 ===== -->
+<section class="screen" id="screen-myreq">
+  <div class="page-title" style="margin-bottom:4px;">我的領用</div>
+  <div class="sec-label">已申請</div>
+  <div class="req-cards" id="reqCards"></div>
+  <div class="sec-label">歷史紀錄</div>
+  <div class="panel">
+    <table class="grid" id="historyTable">
+      <thead><tr><th style="width:44px;"></th><th>申請單號</th><th>領用日期</th><th>狀態</th><th>退回原因</th></tr></thead>
+      <tbody></tbody>
+    </table>
+    <div class="pagination">
+      <div class="pages"><button>&#8249;</button><button class="active">1</button><button>2</button><button>3</button><button>4</button><button>5</button><span>…</span><button>10</button><button>&#8250;</button></div>
+      <div class="right"><span>共 100 筆資料</span><select><option>10 條/頁</option></select><span>跳頁 <input></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 庫存管理 ===== -->
+<section class="screen" id="screen-inventory">
+  <div class="row-between">
+    <div class="page-title">庫存管理</div>
+    <div style="display:flex;gap:4px;">
+      <button class="toolbar-act" onclick="openCategory()"><span class="ic">&#9881;</span>分類管理</button>
+      <button class="toolbar-act" onclick="go('additem')"><span class="ic">&#43;</span>新增品項</button>
+      <button class="toolbar-act" onclick="openAdjust()"><span class="ic">&#8635;</span>調整庫存</button>
+      <button class="toolbar-act" onclick="openLog()"><span class="ic">&#128203;</span>異動紀錄</button>
+    </div>
+  </div>
+  <div class="stat-cards" style="margin:6px 0 16px;">
+    <div class="stat-card"><div class="lbl">當日進貨總量</div><div class="val">128</div></div>
+    <div class="stat-card"><div class="lbl">當日領用總量</div><div class="val">57</div></div>
+    <div class="stat-card"><div class="lbl">待領訂單</div><div class="val">14</div></div>
+    <div class="stat-card alert"><div class="lbl">低庫存品項</div><div class="val">4</div></div>
+  </div>
+  <div class="row-between" style="margin-bottom:14px;">
+    <div class="filter-tabs" id="invFilter">
+      <button class="active" data-f="all">全部</button>
+      <button data-f="正常">正常</button>
+      <button data-f="低庫存">低庫存</button>
+      <button data-f="缺貨">缺貨</button>
+    </div>
+    <button class="toolbar-act" onclick="toast('報表匯出中…','ok')"><span class="ic">&#11015;</span>輸出報表</button>
+  </div>
+  <div class="panel">
+    <div class="table-scroll">
+      <table class="grid" id="invTable">
+        <thead><tr>
+          <th><input type="checkbox" class="chk" id="invAll"></th>
+          <th>料號 <span class="search">&#128269;</span><span class="sort">&#8645;</span></th>
+          <th>品項名稱 <span class="search">&#128269;</span></th><th>圖片</th><th>分類 &#9662;</th>
+          <th>安全量</th><th>實際庫存量</th><th>待領量</th><th>可用量</th>
+          <th>當日進貨量</th><th>當日領用量</th><th>狀態</th><th>動作</th><th>備註</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="pagination">
+      <div class="pages"><button>&#8249;</button><button class="active">1</button><button>2</button><button>3</button><button>4</button><button>5</button><span>…</span><button>10</button><button>&#8250;</button></div>
+      <div class="right"><span>共 100 筆資料</span><select><option>10 條/頁</option></select><span>跳頁 <input></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 新增品項 ===== -->
+<section class="screen" id="screen-additem">
+  <div class="row-between">
+    <div class="page-title"><button class="back" onclick="go('inventory')">&#8592;</button>新增品項</div>
+    <button class="btn btn-primary" onclick="submitNewItems()">送出</button>
+  </div>
+  <div class="panel">
+    <div class="table-scroll">
+      <table class="grid edit-table" id="addTable">
+        <thead><tr>
+          <th>料號</th><th>圖片</th><th>品項名稱</th><th>分類</th><th>單位</th>
+          <th>初始數量</th><th>安全量</th><th>上架狀態</th><th></th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div style="padding:14px 16px;display:flex;gap:12px;align-items:center;border-top:1px solid var(--hair);background:var(--rose-50);">
+      <button class="btn btn-primary" onclick="addNewRow()">&#43; 新增</button>
+      <span style="color:var(--hair-strong);">|</span>
+      <button class="btn btn-outline" onclick="openImport()">批量匯入</button>
+    </div>
+    <div class="pagination">
+      <div class="pages"><button>&#8249;</button><button class="active">1</button><button>2</button><button>3</button><button>4</button><button>5</button><span>…</span><button>10</button><button>&#8250;</button></div>
+      <div class="right"><span>共 50 筆資料</span><select><option>10 條/頁</option></select><span>跳頁 <input></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 月報表（統計報表）===== -->
+<section class="screen" id="screen-report">
+  <div class="page-title">統計報表</div>
+  <div class="row-between" style="margin-bottom:14px;">
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+      <select class="select" id="rpCo" style="width:180px;" onchange="renderReport()">
+        <option value="">請選擇公司別</option>
+        <option>大成長城企業股份有限公司</option>
+        <option>大成長城企業(歸仁)</option>
+        <option>大成食品股份有限公司</option>
+      </select>
+      <select class="select" id="rpCc" style="width:190px;" onchange="renderReport()">
+        <option value="">請選擇成本中心</option>
+        <option>1600-資訊處</option>
+        <option>1120-行政服務部</option>
+        <option>1700-管理處</option>
+      </select>
+      <input type="month" class="input" value="2026-01" style="width:160px;">
+    </div>
+    <button class="toolbar-act" onclick="toast('月報表匯出中…','ok')"><span class="ic">&#11015;</span>輸出月報表</button>
+  </div>
+  <div class="panel">
+    <div class="table-scroll">
+      <table class="grid" id="reportTable">
+        <thead><tr>
+          <th><input type="checkbox" class="chk" id="rpAll" onclick="rpToggleAll(this)"></th>
+          <th>公司別 <span class="search">&#128269;</span></th>
+          <th>成本中心 <span class="search">&#128269;</span></th>
+          <th>分類 &#9662;</th>
+          <th>料號 <span class="search">&#128269;</span></th>
+          <th>品項名稱 <span class="search">&#128269;</span></th>
+          <th>領用數量 <span class="sort" onclick="rpSort()">&#8645;</span></th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="pagination">
+      <div class="pages"><button>&#8249;</button><button class="active">1</button><button>2</button><button>3</button><button>4</button><button>5</button><span>…</span><button>10</button><button>&#8250;</button></div>
+      <div class="right"><span>共 100 筆資料</span><select><option>10 條/頁</option></select><span>跳頁 <input></span></div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============ Modals ============ -->
+<!-- 進貨 -->
+<div class="modal-mask" id="m-restock" onclick="maskClose(event)">
+  <div class="modal">
+    <div class="modal-head"><h3>進貨</h3><div class="acts">
+      <button class="btn btn-green btn-mini" onclick="doRestock()">確定</button>
+      <button class="btn btn-red btn-mini" onclick="closeModal('m-restock')">取消</button></div></div>
+    <div class="modal-body">
+      <table class="kv" style="margin-bottom:16px;"><tbody>
+        <tr><th>料號</th><td id="rs-sku"></td></tr>
+        <tr><th>品項名稱</th><td id="rs-name"></td></tr>
+        <tr><th>實際庫存量</th><td id="rs-stock"></td></tr>
+        <tr><th>上架圖片</th><td id="rs-img"></td></tr>
+      </tbody></table>
+      <div class="field" style="display:grid;grid-template-columns:80px 1fr;align-items:center;gap:12px;margin-bottom:12px;">
+        <label style="margin:0;">進貨量</label><input class="input" id="rs-qty" type="number" value="30"></div>
+      <div class="field" style="display:grid;grid-template-columns:80px 1fr;align-items:center;gap:12px;margin:0;">
+        <label style="margin:0;">備註</label><input class="input" id="rs-note" placeholder="-"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 編輯資訊 -->
+<div class="modal-mask" id="m-edit" onclick="maskClose(event)">
+  <div class="modal">
+    <div class="modal-head"><h3>編輯資訊</h3><div class="acts">
+      <button class="btn btn-green btn-mini" onclick="doEdit()">確定</button>
+      <button class="btn btn-red btn-mini" onclick="closeModal('m-edit')">取消</button></div></div>
+    <div class="modal-body">
+      <div class="field" style="display:grid;grid-template-columns:80px 1fr;align-items:center;gap:12px;"><label style="margin:0;">料號</label><input class="input" id="ed-sku"></div>
+      <div class="field" style="display:grid;grid-template-columns:80px 1fr;align-items:center;gap:12px;"><label style="margin:0;">品項名稱</label><input class="input" id="ed-name"></div>
+      <div class="field" style="display:grid;grid-template-columns:80px 1fr;align-items:center;gap:12px;"><label style="margin:0;">安全量</label><input class="input" id="ed-safe" type="number"></div>
+      <div class="field" style="display:grid;grid-template-columns:80px 1fr;align-items:center;gap:12px;"><label style="margin:0;">備註</label><input class="input" id="ed-note" placeholder="-"></div>
+      <div class="field" style="display:grid;grid-template-columns:80px 1fr;align-items:start;gap:12px;margin:0;"><label style="margin:0;">上架圖片</label>
+        <div style="width:96px;height:96px;border:2px dashed var(--rose-300);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--t3);cursor:pointer;" onclick="toast('選擇圖片','ok')"><span style="font-size:22px;">&#43;</span><span style="font-size:12px;">0/1</span></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 調整庫存 -->
+<div class="modal-mask" id="m-adjust" onclick="maskClose(event)">
+  <div class="modal wide">
+    <div class="modal-head"><h3>調整庫存</h3><div class="acts">
+      <button class="btn btn-green btn-mini" onclick="saveAdjust()">儲存</button>
+      <button class="btn btn-red btn-mini" onclick="closeModal('m-adjust')">取消</button></div></div>
+    <div class="modal-body" style="padding:16px;">
+      <div class="panel" style="box-shadow:none;">
+        <table class="grid" id="adjTable"><thead><tr>
+          <th>序號</th><th>料號 <span class="search">&#128269;</span></th><th>品項名稱 <span class="search">&#128269;</span></th>
+          <th>實際庫存量</th><th>調整數量</th><th>異動後庫存</th><th>備註</th>
+        </tr></thead><tbody></tbody></table>
+        <div class="pagination"><div class="pages"><button>&#8249;</button><button class="active">1</button><button>2</button><button>3</button><button>4</button><button>5</button><span>…</span><button>10</button><button>&#8250;</button></div>
+          <div class="right"><span>共 100 筆資料</span><select><option>10 條/頁</option></select><span>跳頁 <input></span></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 異動紀錄 -->
+<div class="modal-mask" id="m-log" onclick="maskClose(event)">
+  <div class="modal wide">
+    <div class="modal-head"><h3>異動紀錄</h3><button class="x" onclick="closeModal('m-log')">&times;</button></div>
+    <div class="modal-body" style="padding:16px;">
+      <div class="panel" style="box-shadow:none;">
+        <table class="grid" id="logTable"><thead><tr>
+          <th>序號</th><th>異動時間 <span class="sort">&#8645;</span></th><th>品項名稱 <span class="search">&#128269;</span></th>
+          <th>操作人員 <span class="search">&#128269;</span></th><th>操作類型 &#9662;</th><th>數量</th><th>異動後庫存</th><th>備註</th>
+        </tr></thead><tbody></tbody></table>
+        <div class="pagination"><div class="pages"><button>&#8249;</button><button class="active">1</button><button>2</button><button>3</button><button>4</button><button>5</button><span>…</span><button>10</button><button>&#8250;</button></div>
+          <div class="right"><span>共 100 筆資料</span><select><option>10 條/頁</option></select><span>跳頁 <input></span></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 批量匯入 -->
+<div class="modal-mask" id="m-import" onclick="maskClose(event)">
+  <div class="modal">
+    <div class="modal-head"><h3>批量匯入</h3><div class="acts">
+      <button class="btn btn-green btn-mini" onclick="doImport()">匯入</button>
+      <button class="btn btn-red btn-mini" onclick="closeModal('m-import')">取消</button></div></div>
+    <div class="modal-body">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <span style="color:var(--t2);font-size:14px;">請依照 <b>範例檔案</b> 之欄位格式填寫，避免匯入失敗。</span>
+        <button class="act-link" onclick="toast('範例檔下載中…','ok')">下載範例檔案 &#11015;</button>
+      </div>
+      <div class="dropzone" onclick="pickFile()">
+        <div class="dz-ic">&#9729;&#65039;</div><div class="dz-t">請上傳 Excel 檔案</div>
+        <div style="font-size:13px;color:var(--t3);">拖放檔案至此，或點擊上傳</div></div>
+      <div class="file-chip" id="importChip" style="display:none;">
+        <span>&#128206; <span id="importFileName">0824進貨清單.xlsx</span></span>
+        <button class="trash" onclick="clearImport()">&times;</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- 領用資訊（查看） -->
+<div class="modal-mask" id="m-detail" onclick="maskClose(event)">
+  <div class="modal wide" style="max-width:900px;">
+    <div class="modal-head"><h3 id="dt-title">預約資訊</h3><button class="x" onclick="closeModal('m-detail')">&times;</button></div>
+    <div class="modal-body" id="dt-body"></div>
+  </div>
+</div>
+
+<!-- 編輯預約（我的領用｜未確認）-->
+<div class="modal-mask" id="m-editreq" onclick="maskClose(event)">
+  <div class="modal wide" style="max-width:900px;">
+    <div class="modal-head"><h3>編輯預約</h3><div class="acts">
+      <button class="btn btn-green btn-mini" onclick="saveEditReq()">儲存</button>
+      <button class="btn btn-red btn-mini" onclick="closeModal('m-editreq')">取消</button></div></div>
+    <div class="modal-body">
+      <div class="sec-block">
+        <div class="sec-bar">基本資料</div>
+        <table class="form-kv"><tbody>
+          <tr><th>申請單號</th><td colspan="3">送出後產生</td></tr>
+          <tr><th>填單日期</th><td>2026/01/04 12:34:56</td><th>填單人員</th><td>10011274-林益凡</td></tr>
+          <tr><th>申請人員</th><td>10011274-林益凡</td><th>公司代碼</th><td>大成長城企業股份有限公司</td></tr>
+          <tr><th>成本中心</th><td>1600-資訊處</td><th>領用日期</th><td><input type="date" id="er-date" value="2026-08-27"></td></tr>
+          <tr><th>聯絡電話/分機</th><td><input id="er-tel" value="#5311"></td><th>備註</th><td>-</td></tr>
+        </tbody></table>
+      </div>
+      <div class="sec-block">
+        <div class="sec-bar">領用項目</div>
+        <table class="item-grid"><thead><tr>
+          <th style="width:60px;">序號</th><th>品項</th><th>申請數量</th><th>單位</th><th>實際領用數量</th><th>備註</th>
+        </tr></thead><tbody id="er-items"></tbody></table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 領用補單（領用總覽）-->
+<div class="modal-mask" id="m-addorder" onclick="maskClose(event)">
+  <div class="modal wide" style="max-width:920px;">
+    <div class="modal-head"><h3>領用補單</h3><div class="acts">
+      <button class="btn btn-green btn-mini" onclick="submitAddOrder()">送單</button>
+      <button class="btn btn-red btn-mini" onclick="closeModal('m-addorder')">取消</button></div></div>
+    <div class="modal-body">
+      <div class="sec-block">
+        <div class="sec-bar">基本資料</div>
+        <table class="form-kv"><tbody>
+          <tr><th>申請單號</th><td colspan="3">送出後產生</td></tr>
+          <tr><th>填單日期</th><td>2026/01/04 12:34:56</td><th>填單人員</th><td>10011274-林益凡</td></tr>
+          <tr><th>申請人員</th><td>10011274-林益凡</td><th>公司代碼</th><td><select class="select" style="max-width:260px;"><option>大成長城企業股份有限公司</option><option>大成長城企業(歸仁)</option><option>大成食品股份有限公司</option></select></td></tr>
+          <tr><th>成本中心</th><td><select class="select" style="max-width:200px;"><option>1600 資訊處</option><option>1700 管理處</option></select></td><th>領用時間</th><td><input type="date" value="2026-08-27"></td></tr>
+          <tr><th>聯絡電話/分機</th><td><input value="#5311"></td><th>備註</th><td>-</td></tr>
+        </tbody></table>
+      </div>
+      <div class="sec-block">
+        <div class="sec-bar">領用項目</div>
+        <table class="item-grid"><thead><tr>
+          <th style="width:60px;">序號</th><th>品項</th><th>申請數量</th><th>單位</th><th>實際領用數量</th><th>備註</th>
+        </tr></thead><tbody id="ao-items"></tbody></table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 分類管理（庫存管理）-->
+<div class="modal-mask" id="m-category" onclick="maskClose(event)">
+  <div class="modal" style="max-width:620px;">
+    <div class="modal-head"><h3>分類管理</h3><div class="acts">
+      <button class="btn btn-green btn-mini" onclick="saveCategory()">儲存</button>
+      <button class="btn btn-red btn-mini" onclick="closeModal('m-category')">取消</button></div></div>
+    <div class="modal-body">
+      <div class="form-section-label">文具類別</div>
+      <div class="tag-box" id="catTags" onclick="focusTag('cat')"></div>
+      <div class="form-section-label" style="margin-top:20px;">單位名稱</div>
+      <div class="tag-box" id="unitTags" onclick="focusTag('unit')"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 文具領用（領用總覽｜已確認→領用）-->
+<div class="modal-mask" id="m-grant" onclick="maskClose(event)">
+  <div class="modal wide" style="max-width:920px;">
+    <div class="modal-head"><h3>文具領用</h3><div class="acts">
+      <button class="btn btn-green btn-mini" onclick="doGrant()">送單</button>
+      <button class="btn btn-red btn-mini" onclick="closeModal('m-grant')">取消</button></div></div>
+    <div class="modal-body" id="gr-body"></div>
+  </div>
+</div>
+
+<!-- 回報狀態 -->
+<div class="modal-mask" id="m-report" onclick="maskClose(event)">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-head"><h3>回報狀態</h3><div class="acts">
+      <button class="btn btn-green btn-mini" onclick="doReport()">確定</button>
+      <button class="btn btn-red btn-mini" onclick="closeModal('m-report')">取消</button></div></div>
+    <div class="modal-body">
+      <div style="display:flex;align-items:center;margin-bottom:16px;">
+        <span style="width:72px;color:var(--t2);">狀態</span>
+        <span class="radio-inline" style="gap:22px;">
+          <label><input type="radio" name="rpst" value="未確認" onchange="rpToggle()">未確認</label>
+          <label><input type="radio" name="rpst" value="已確認" onchange="rpToggle()">已確認</label>
+          <label><input type="radio" name="rpst" value="退回" onchange="rpToggle()">退回</label>
+        </span>
+      </div>
+      <div id="rp-reason" style="display:flex;align-items:center;">
+        <span style="width:72px;color:var(--t2);">退回原因</span>
+        <input class="input" id="rp-reason-input" style="flex:1;max-width:360px;" value="-">
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast-wrap"></div>
+
+<script>
+/* ================= 假資料 ================= */
+function penTrio(){
+  const pen=(y,c)=>`<rect x="8" y="${y}" width="52" height="8" rx="4" fill="#f4f1ea" stroke="#cbc4b9" stroke-width="1"/>`
+    +`<rect x="8" y="${y}" width="11" height="8" rx="4" fill="${c}"/>`
+    +`<path d="M60 ${y} L70 ${y+4} L60 ${y+8} Z" fill="${c}"/>`
+    +`<rect x="22" y="${y-2.5}" width="2.4" height="6" rx="1" fill="${c}"/>`;
+  return `<svg width="80" height="56" viewBox="0 0 80 56" xmlns="http://www.w3.org/2000/svg">`
+    +`<g transform="rotate(-26 40 28)">${pen(8,'#e5484d')}${pen(20,'#3b6fe0')}${pen(32,'#2b2f36')}</g></svg>`;
+}
+function icon(cat){
+  const s='width="52" height="52" viewBox="0 0 48 48" fill="none" stroke="#8C4B67" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"';
+  const m={
+    '書寫':`<svg ${s}><path d="M30 8l10 10-20 20-12 2 2-12z"/><path d="M27 11l10 10"/></svg>`,
+    '紙品':`<svg ${s}><rect x="12" y="8" width="24" height="32" rx="2"/><path d="M18 16h12M18 22h12M18 28h8"/></svg>`,
+    '檔案收納':`<svg ${s}><path d="M8 14h12l3 4h17v20H8z"/><path d="M8 14v-2a2 2 0 012-2h6l3 4"/></svg>`,
+    '裝訂':`<svg ${s}><rect x="14" y="8" width="20" height="32" rx="2"/><path d="M20 8v32M17 14h0M17 20h0M17 26h0"/></svg>`,
+    '裁切工具':`<svg ${s}><circle cx="16" cy="30" r="5"/><circle cx="32" cy="30" r="5"/><path d="M20 27L38 9M28 27L14 11"/></svg>`,
+    '事務耗材':`<svg ${s}><rect x="10" y="18" width="28" height="18" rx="2"/><path d="M16 18v-4a8 8 0 0116 0v4"/></svg>`
+  };
+  return m[cat]||m['書寫'];
+}
+const CATS=['書寫','紙品','檔案收納','裝訂','裁切工具','事務耗材'];
+const PRODUCTS=[
+  {sku:'PEN-BL-05',name:'原子筆(藍) 0.5mm',cat:'書寫',stock:120},
+  {sku:'PEN-RD-04',name:'原子筆(紅) 0.5mm',cat:'書寫',stock:120},
+  {sku:'PEN-BA-03',name:'原子筆(黑) 0.5mm',cat:'書寫',stock:10},
+  {sku:'MPEN-BL-04',name:'中性筆(藍) 0.38mm',cat:'書寫',stock:120},
+  {sku:'PEN-RD-03',name:'原子筆(紅) 0.38mm',cat:'書寫',stock:60},
+  {sku:'MARK-BL-05',name:'白板筆(藍)',cat:'書寫',stock:0},
+  {sku:'MARK-BK-01',name:'白板筆(黑)',cat:'書寫',stock:85},
+  {sku:'HL-YL-01',name:'螢光筆(黃)',cat:'書寫',stock:42},
+  {sku:'PCL-2B-01',name:'自動鉛筆 2B',cat:'書寫',stock:200},
+  {sku:'ERZ-01',name:'橡皮擦',cat:'書寫',stock:150},
+  {sku:'PPR-A4-01',name:'A4 影印紙',cat:'紙品',stock:0},
+  {sku:'MEMO-01',name:'便條紙',cat:'紙品',stock:400},
+  {sku:'PPR-A3-01',name:'A3 影印紙',cat:'紙品',stock:75},
+  {sku:'FLD-01',name:'資料夾(藍)',cat:'檔案收納',stock:90},
+  {sku:'FLD-02',name:'風琴夾',cat:'檔案收納',stock:8},
+  {sku:'STPL-01',name:'訂書針',cat:'裝訂',stock:300},
+  {sku:'STPLR-01',name:'訂書機',cat:'裝訂',stock:35},
+  {sku:'CUT-01',name:'美工刀',cat:'裁切工具',stock:48},
+  {sku:'SCS-01',name:'剪刀',cat:'裁切工具',stock:22},
+  {sku:'BAT-01',name:'3號電池',cat:'事務耗材',stock:120},
+];
+let activeCat='書寫', sortAsc=false;
+let cart=[
+  {sku:'MARK-BL-05',name:'白板筆(藍)',qty:130,stock:120},
+  {sku:'PEN-BL-05',name:'原子筆(藍) 0.5mm',qty:10,stock:120},
+];
+let cartStage='edit';
+
+const COMPANIES=['大成長城企業股份有限公司','大成長城企業(歸仁)','大成食品股份有限公司'];
+const OVERVIEW=(()=>{const st=['未確認','未確認','未確認','未確認','未確認','已確認','退回','已領用','取消','已領用'];
+  return st.map((s,i)=>({no:'OSR2026081000'+(i+1),user:['黃維興','梁思齊','張曉熙','陳俊凱','許昕元'][i%5],
+    empno:'1001000'+(i%3+1),date:'2026/08/10',company:COMPANIES[i%3],cc:'1600-資訊處',tel:'#123',
+    time:'2026/08/10 12:59',status:s,reason:s==='退回'?'庫存臨時調動':''}));})();
+
+let MYREQ=[
+  {no:'OSR20260810001',name:'原子筆 (藍) 0.5mm',status:'未確認',date:'2026/01/20 (三)'},
+  {no:'OSR20260810001',name:'原子筆 (藍) 0.5mm',status:'已確認',date:'2026/01/20 (三)'},
+  {no:'OSR20260810002',name:'白板筆 (藍)',status:'退回',date:'2026/01/20 (三) 10:00'},
+];
+const HISTORY=[
+  {no:'OSR20260810001',date:'2026/01/03',status:'已領用',reason:'',items:[
+    {n:'原子筆(藍) 0.5mm',q:10,u:'支',note:'-'},{n:'白板筆(藍)',q:5,u:'支',note:'-'}]},
+  {no:'OSR20260810002',date:'2025/12/26',status:'取消',reason:'',items:[{n:'A4 影印紙',q:2,u:'包',note:'-'}]},
+  {no:'OSR20260810003',date:'2025/12/26',status:'退回',reason:'庫存臨時調動',items:[{n:'螢光筆(黃)',q:3,u:'支',note:'-'}]},
+];
+
+const INVENTORY=[
+  {sku:'PEN-BL-01',name:'原子筆(藍) 0.5mm',cat:'書寫',safe:50,stock:240,wait:18,avail:222,in:50,out:10},
+  {sku:'PEN-BK-02',name:'原子筆(黑) 0.5mm',cat:'書寫',safe:50,stock:240,wait:12,avail:228,in:50,out:20},
+  {sku:'PEN-RD-03',name:'原子筆(紅) 0.5mm',cat:'書寫',safe:50,stock:240,wait:30,avail:210,in:50,out:10},
+  {sku:'PEN-BL-04',name:'原子筆(藍) 0.38mm',cat:'書寫',safe:50,stock:240,wait:40,avail:200,in:50,out:15},
+  {sku:'PEN-BK-05',name:'原子筆(黑) 0.38mm',cat:'書寫',safe:50,stock:30,wait:20,avail:10,in:50,out:25},
+  {sku:'PEN-RD-06',name:'原子筆(紅) 0.38mm',cat:'書寫',safe:50,stock:30,wait:40,avail:-10,in:50,out:10},
+  {sku:'HL-YL-01',name:'螢光筆(黃)',cat:'書寫',safe:30,stock:0,wait:13,avail:-13,in:30,out:5},
+  {sku:'PPR-01',name:'A4 影印紙',cat:'紙品',safe:50,stock:0,wait:23,avail:-23,in:10,out:5},
+  {sku:'MEMO-01',name:'便條紙',cat:'紙品',safe:60,stock:400,wait:34,avail:366,in:40,out:19},
+  {sku:'STPL-01',name:'訂書針',cat:'事務耗材',safe:50,stock:300,wait:54,avail:246,in:30,out:23},
+];
+function invStatus(r){ if(r.stock<=0) return '缺貨'; if(r.stock<r.safe||r.avail<r.safe) return '低庫存'; return '正常'; }
+const LOG=[
+  {t:'2026-08-25 10:53:04',name:'原子筆(藍) 0.5mm',op:'進貨',qty:50,after:290,note:''},
+  {t:'2026-08-25 09:50:01',name:'原子筆(紅) 0.5mm',op:'領用',qty:-30,after:240,note:''},
+  {t:'2026-08-25 08:45:15',name:'原子筆(黑) 0.5mm',op:'編輯',qty:-20,after:244,note:'盤點調整'},
+  {t:'2026-08-24 09:53:04',name:'原子筆(黑) 0.38mm',op:'進貨',qty:10,after:262,note:''},
+  {t:'2026-08-24 08:50:03',name:'原子筆(藍) 0.38mm',op:'領用',qty:-55,after:210,note:'活動需要'},
+  {t:'2026-08-23 08:30:44',name:'原子筆(紅) 0.38mm',op:'領用',qty:-60,after:140,note:''},
+  {t:'2026-08-23 08:15:02',name:'原子筆(藍) 0.38mm',op:'編輯',qty:70,after:100,note:''},
+];
+let addRows=[{sku:'PEN-BL-01',name:'原子筆(藍) 0.5mm',cat:'書寫',unit:'支',init:30,safe:50,shelf:'上架',img:true}];
+
+/* ================= 導覽 ================= */
+function go(screen){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+screen).classList.add('active');
+  document.querySelectorAll('#primaryTabs .ptab').forEach(t=>t.classList.toggle('active',t.dataset.screen===screen));
+  window.scrollTo(0,0);
+  if(screen==='apply') renderProducts();
+  if(screen==='cart'){cartStage='edit';renderCart();}
+  if(screen==='myreq') renderMyReq();
+  if(screen==='overview') renderOverview();
+  if(screen==='inventory') renderInventory();
+  if(screen==='additem') renderAddTable();
+  if(screen==='report') renderReport();
+}
+document.querySelectorAll('#primaryTabs .ptab').forEach(t=>t.addEventListener('click',()=>go(t.dataset.screen)));
+
+/* ================= toast / modal ================= */
+function toast(msg,type){const w=document.getElementById('toast-wrap');const el=document.createElement('div');
+  el.className='toast '+(type||'');el.innerHTML=(type==='ok'?'&#10003; ':type==='err'?'&#10005; ':type==='warn'?'&#9888; ':'')+msg;
+  w.appendChild(el);setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .3s';setTimeout(()=>el.remove(),300);},2200);}
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function maskClose(e){if(e.target.classList.contains('modal-mask'))e.target.classList.remove('open');}
+
+/* ================= 領用申請（購物頁）================= */
+function renderCatList(){
+  const el=document.getElementById('catList');
+  let h=`<div class="cat parent"><span>&#9662;</span> 全部品項</div>`;
+  CATS.forEach(c=>h+=`<div class="cat ${c===activeCat?'active':''}" onclick="selectCat('${c}')">${c}</div>`);
+  el.innerHTML=h;
+}
+function selectCat(c){activeCat=c;renderCatList();renderProducts();}
+function toggleSort(){sortAsc=!sortAsc;document.getElementById('sortLabel').textContent=sortAsc?'庫存少到多':'庫存多到少';renderProducts();}
+function renderProducts(){
+  const q=(document.getElementById('prodSearch').value||'').trim();
+  let list=PRODUCTS.filter(p=>p.cat===activeCat).filter(p=>!q||p.name.includes(q)||p.sku.includes(q));
+  list.sort((a,b)=>sortAsc?a.stock-b.stock:b.stock-a.stock);
+  document.getElementById('catName').textContent=activeCat;
+  document.getElementById('catCount').textContent='共 '+PRODUCTS.filter(p=>p.cat===activeCat).length+' 項';
+  const grid=document.getElementById('productGrid');
+  if(!list.length){grid.innerHTML='<div class="empty-state" style="grid-column:1/-1;">找不到符合的品項，換個關鍵字試試。</div>';return;}
+  grid.innerHTML=list.map((p,i)=>{
+    const id='q_'+p.sku.replace(/[^a-zA-Z0-9]/g,'');
+    let stockLine,disabled='';
+    if(p.stock<=0){stockLine=`<span class="stock-out"><span class="dot"></span>暫無庫存</span>`;disabled='disabled';}
+    else if(p.stock<=15){stockLine=`<span class="stock-low"><span class="dot"></span>目前庫存 ${p.stock}</span>`;}
+    else{stockLine=`<span class="stock-normal"><span class="dot"></span>目前庫存 ${p.stock}</span>`;}
+    return `<div class="pcard">
+      <div class="pimg">${icon(p.cat)}</div>
+      <div class="pname">${p.name}</div><div class="psku">${p.sku}</div>
+      <div class="pstock" id="s_${id}">${stockLine}</div>
+      <div class="prow">
+        <div class="stepper" id="st_${id}">
+          <button onclick="stepQty('${id}',${p.stock},-1)">&minus;</button>
+          <input id="${id}" value="1" onchange="checkQty('${id}',${p.stock})" oninput="checkQty('${id}',${p.stock})">
+          <button onclick="stepQty('${id}',${p.stock},1)">&plus;</button>
+        </div>
+        <button class="btn btn-primary" style="flex:1;" ${disabled} onclick="addToCart('${p.sku}','${p.name}',${p.stock},'${id}')">加入購物車</button>
+      </div></div>`;
+  }).join('');
+}
+function stepQty(id,stock,d){const el=document.getElementById(id);let v=Math.max(1,(parseInt(el.value)||1)+d);el.value=v;checkQty(id,stock);}
+function checkQty(id,stock){
+  const el=document.getElementById(id);let v=parseInt(el.value)||0;
+  const st=document.getElementById('st_'+id),line=document.getElementById('s_'+id);
+  const p=PRODUCTS.find(x=>('q_'+x.sku.replace(/[^a-zA-Z0-9]/g,''))===id);
+  if(stock>0&&v>stock){st.classList.add('over');
+    line.innerHTML=`<span class="stock-over">已超過可用庫存，最多可領 ${stock}</span>`;}
+  else{st.classList.remove('over');
+    if(stock<=0)line.innerHTML=`<span class="stock-out"><span class="dot"></span>暫無庫存</span>`;
+    else if(stock<=15)line.innerHTML=`<span class="stock-low"><span class="dot"></span>目前庫存 ${stock}</span>`;
+    else line.innerHTML=`<span class="stock-normal"><span class="dot"></span>目前庫存 ${stock}</span>`;}
+}
+function addToCart(sku,name,stock,id){
+  const qty=parseInt(document.getElementById(id).value)||1;
+  if(stock>0&&qty>stock){toast('數量已超過可用庫存','err');return;}
+  const ex=cart.find(c=>c.sku===sku);
+  if(ex)ex.qty+=qty;else cart.push({sku,name,qty,stock});
+  updateCartBadge();toast(`已加入購物車：${name} ×${qty}`,'ok');
+}
+function updateCartBadge(){document.getElementById('cartBadge').textContent=cart.reduce((s,c)=>s+1,0);}
+
+/* ================= 購物車 ================= */
+function renderCart(){renderCartItems();renderCartInfo();updateCartBadge();}
+function renderCartItems(){
+  const el=document.getElementById('cartItems');let h='';
+  cart.forEach((c,i)=>{
+    const over=c.stock>0&&c.qty>c.stock;
+    h+=`<div class="cart-item ${over?'over':''}">
+      <input type="checkbox" class="chk" checked>
+      <div style="color:var(--t3);">${i+1}</div>
+      <div class="cimg">${icon((PRODUCTS.find(p=>p.sku===c.sku)||{}).cat||'書寫')}</div>
+      <div><div class="cname">${c.name}</div><div class="csku">${c.sku}</div></div>
+      <div class="stepper ${over?'over':''}">
+        <button onclick="cartStep(${i},-1)">&minus;</button>
+        <input value="${c.qty}" onchange="cartSet(${i},this.value)">
+        <button onclick="cartStep(${i},1)">&plus;</button></div>
+      <button class="trash" onclick="cartDel(${i})">&#128465;</button>
+      ${over?`<div class="cwarn">&#9888; 此品項超過可用庫存（${c.stock}），請調整數量後再送出</div>`:''}
+    </div>`;
+  });
+  for(let i=cart.length;i<4;i++) h+=`<div class="cart-item empty"><input type="checkbox" class="chk" disabled><div>${i+1}</div><div></div><div></div><div></div><div></div></div>`;
+  el.innerHTML=h;
+}
+function cartStep(i,d){cart[i].qty=Math.max(1,cart[i].qty+d);renderCart();}
+function cartSet(i,v){cart[i].qty=Math.max(1,parseInt(v)||1);renderCart();}
+function cartDel(i){cart.splice(i,1);renderCart();}
+function renderCartInfo(){
+  const body=document.getElementById('cartInfoBody'),foot=document.getElementById('cartFoot');
+  const totalItems=cart.length,totalQty=cart.reduce((s,c)=>s+c.qty,0);
+  const summary=cart.map(c=>`<div class="item-summary"><div><div style="font-weight:600;color:var(--t1);">${c.name}</div><div style="color:var(--t3);font-size:13px;">${c.sku}</div></div><div class="qty">×${c.qty}</div></div>`).join('');
+  if(cartStage==='edit'){
+    body.innerHTML=`
+      <table class="kv" style="margin-bottom:14px;"><tbody>
+        <tr><th>填單時間</th><td>2026/08/18 10:26:01</td></tr>
+        <tr><th>填單人員</th><td>10011275 洪慕藍</td></tr></tbody></table>
+      <div class="field"><label><span class="req">*</span>申請人員</label>
+        <select class="select"><option>10011274 林益凡</option><option>10011275 洪慕藍</option></select></div>
+      <div class="field"><label><span class="req">*</span>領用日期</label><input class="input" type="date" value="2026-08-27"></div>
+      <div class="field"><label><span class="req">*</span>公司代碼</label><select class="select">${COMPANIES.map(c=>`<option>${c}</option>`).join('')}</select></div>
+      <div class="field"><label><span class="req">*</span>成本中心</label><select class="select"><option>1600 資訊處</option><option>1700 管理處</option></select></div>
+      <div class="field"><label><span class="req">*</span>聯絡電話/分機</label><input class="input" value="#5311"></div>
+      <div class="field"><label>備註</label><textarea class="textarea" placeholder="-"></textarea></div>
+      <div style="border-top:1px solid var(--hair);margin:6px 0 12px;"></div>
+      <div style="font-weight:600;margin-bottom:8px;">申請項目</div>${summary}`;
+    foot.innerHTML=`<button class="btn btn-green" onclick="cartConfirm()">確定</button>`;
+  }else{
+    body.innerHTML=`
+      <table class="kv" style="margin-bottom:14px;"><tbody>
+        <tr><th>填單日期</th><td>2026/08/18 10:26:01</td></tr>
+        <tr><th>填單人員</th><td>10011275 洪慕藍</td></tr>
+        <tr><th>申請人員</th><td>10011274 林益凡</td></tr>
+        <tr><th>領用日期</th><td>2026/08/27</td></tr>
+        <tr><th>公司代碼</th><td>大成長城企業股份有限公司</td></tr>
+        <tr><th>聯絡電話/分機</th><td>#5311</td></tr>
+        <tr><th>備註</th><td>-</td></tr></tbody></table>
+      <div style="border-top:1px solid var(--hair);margin:6px 0 12px;"></div>
+      <div style="font-weight:600;margin-bottom:8px;">申請項目</div>${summary}
+      <div style="border-top:1px solid var(--hair);margin:12px 0 6px;"></div>
+      <div class="stat-line"><span style="color:var(--t2);">品項數</span><b>${totalItems} 項</b></div>
+      <div class="stat-line"><span style="color:var(--t2);">總領用數量</span><b>${totalQty} 件</b></div>`;
+    foot.innerHTML=`<button class="btn btn-red" onclick="cartStage='edit';renderCartInfo();">取消</button><button class="btn btn-green" onclick="cartSubmit()">送出申請</button>`;
+  }
+}
+function cartConfirm(){
+  const bad=cart.find(c=>c.stock>0&&c.qty>c.stock);
+  if(bad){toast('仍有品項超過可用庫存，請先調整','err');return;}
+  if(!cart.length){toast('購物車是空的','warn');return;}
+  cartStage='confirm';renderCartInfo();
+}
+function cartSubmit(){
+  const no='OSR2026082700'+(Math.floor(Math.random()*9)+1);
+  MYREQ.unshift({no,name:cart[0].name,status:'未確認',date:'2026/08/27 (四)'});
+  cart=[];updateCartBadge();
+  toast('已送出申請','ok');
+  setTimeout(()=>go('myreq'),700);
+}
+
+/* ================= 我的領用 ================= */
+const STMAP={'未確認':'gray','已確認':'amber','退回':'red','已領用':'green','取消':'gray'};
+function renderMyReq(){
+  const el=document.getElementById('reqCards');
+  if(!MYREQ.length){el.innerHTML=`<div class="empty-state" style="grid-column:1/-1;"><div class="em-ic">&#128230;</div>目前沒有申請中的單，去<a class="act-link" style="display:inline;" onclick="go('apply')">領用申請</a>看看吧。</div>`;}
+  else el.innerHTML=MYREQ.map((r,i)=>{
+    let foot='';
+    if(r.status==='未確認')foot=`<div class="rc-foot"><a class="act-link" onclick="openEditReq(${i})">&#9998; 編輯</a><a class="act-link muted" onclick="cancelReq(${i})">&#128465; 取消</a></div>`;
+    else if(r.status==='已確認')foot=`<div class="rc-foot"><a class="act-link" onclick="viewReq('${r.no}','${r.name}')">&#128065; 查看</a></div>`;
+    return `<div class="req-card"><div class="rc-body">
+      <div class="rc-no">${r.no}</div>
+      <div class="rc-name">${r.name}<span class="pill solid s-${STMAP[r.status]}"><span class="dot"></span>${r.status}</span></div>
+      <div class="rc-date">${r.date}</div></div>${foot}</div>`;
+  }).join('');
+  const tb=document.querySelector('#historyTable tbody');
+  tb.innerHTML=HISTORY.map((h,i)=>{
+    const sub=`<tr class="expand-row" id="exp_${i}" style="display:none;"><td colspan="5"><table class="sub-table"><thead><tr><th>品項</th><th>數量</th><th>單位</th><th>備註</th></tr></thead><tbody>${h.items.map(it=>`<tr><td>${it.n}</td><td>${it.q}</td><td>${it.u}</td><td>${it.note}</td></tr>`).join('')}</tbody></table></td></tr>`;
+    return `<tr><td><button class="exp-btn" onclick="toggleExp(${i})" id="eb_${i}">&plus;</button></td><td>${h.no}</td><td>${h.date}</td><td><span class="pill solid s-${STMAP[h.status]}"><span class="dot"></span>${h.status}</span></td><td>${h.reason}</td></tr>${sub}`;
+  }).join('');
+}
+function toggleExp(i){const r=document.getElementById('exp_'+i),b=document.getElementById('eb_'+i);
+  const open=r.style.display==='none';r.style.display=open?'table-row':'none';b.innerHTML=open?'&minus;':'&plus;';}
+function cancelReq(i){MYREQ.splice(i,1);renderMyReq();toast('已取消該申請','ok');}
+function viewReq(no,name){
+  document.getElementById('dt-title').textContent='預約資訊';
+  const items=[
+    {n:'橡皮擦',q:1,u:'個',act:2,note:'--'},
+    {n:'原子筆(藍) 0.5mm',q:1,u:'支',act:1,note:'--'},
+  ];
+  document.getElementById('dt-body').innerHTML=`
+    <div class="sec-block">
+      <div class="sec-bar">基本資料</div>
+      <table class="form-kv"><tbody>
+        <tr><th>申請單號</th><td colspan="3">${no}</td></tr>
+        <tr><th>填單日期</th><td>2026/01/04 12:34:56</td><th>填單人員</th><td>10011274-林益凡</td></tr>
+        <tr><th>申請人員</th><td>10011274-林益凡</td><th>公司代碼</th><td>大成長城企業股份有限公司</td></tr>
+        <tr><th>成本中心</th><td>1600-資訊處</td><th>領用日期</th><td>2026/01/20</td></tr>
+        <tr><th>聯絡電話/分機</th><td>#5311</td><th>備註</th><td>-</td></tr>
+      </tbody></table>
+    </div>
+    <div class="sec-block">
+      <div class="sec-bar">領用項目</div>
+      <table class="item-grid"><thead><tr>
+        <th style="width:60px;">序號</th><th>品項</th><th>申請數量</th><th>單位</th><th>實際領用數量</th><th>備註</th>
+      </tr></thead><tbody>${items.map((it,k)=>`<tr><td>${k+1}</td><td>${it.n}</td><td>${it.q}</td><td>${it.u}</td><td>${it.act}</td><td>${it.note}</td></tr>`).join('')}</tbody></table>
+    </div>`;
+  openModal('m-detail');
+}
+function openEditReq(i){
+  const r=MYREQ[i]||{};
+  const items=[
+    {n:'橡皮擦',q:1,u:'個',act:2,note:'--'},
+    {n:(r.name||'原子筆(藍) 0.5mm'),q:1,u:'支',act:1,note:'--'},
+  ];
+  document.getElementById('er-items').innerHTML=items.map((it,k)=>
+    `<tr><td>${k+1}</td><td>${it.n}</td><td>${it.q}</td><td>${it.u}</td><td>${it.act}</td><td>${it.note}</td></tr>`).join('');
+  document.getElementById('m-editreq').dataset.idx=i;
+  openModal('m-editreq');
+}
+function saveEditReq(){closeModal('m-editreq');toast('已儲存變更','ok');}
+
+/* ================= 領用總覽 ================= */
+let ovFilter='all';
+document.querySelectorAll('#ovFilter button').forEach(b=>b.addEventListener('click',()=>{
+  ovFilter=b.dataset.f;document.querySelectorAll('#ovFilter button').forEach(x=>x.classList.toggle('active',x===b));renderOverview();}));
+function renderOverview(){
+  const tb=document.querySelector('#ovTable tbody');
+  const list=OVERVIEW.filter(r=>ovFilter==='all'||r.status===ovFilter);
+  tb.innerHTML=list.map((r,i)=>{
+    let act='';
+    if(r.status==='未確認')act=`<a class="act-link" onclick="ovAct(${OVERVIEW.indexOf(r)},'confirm')">&#10003; 確認</a> <a class="act-link muted" onclick="ovAct(${OVERVIEW.indexOf(r)},'return')">&#8630; 退回</a>`;
+    else if(r.status==='已確認')act=`<a class="act-link" onclick="openGrant(${OVERVIEW.indexOf(r)})">&#8631; 領用</a>`;
+    return `<tr><td><input type="checkbox" class="chk" ${['未確認','已確認'].includes(r.status)?'checked':''}></td>
+      <td>${r.no}</td><td>${r.empno}-${r.user}</td><td>${r.date}</td>
+      <td><span class="eye" onclick="viewReq('${r.no}','領用明細')">&#128065;</span></td>
+      <td>${r.company}</td><td>${r.cc}</td><td>${r.tel}</td><td>${r.time}</td>
+      <td><span class="pill s-${STMAP[r.status]}"><span class="dot"></span>${r.status}</span></td>
+      <td>${act}</td><td>${r.reason||''}</td></tr>`;
+  }).join('');
+}
+function ovAct(i,type){
+  if(type==='confirm'){OVERVIEW[i].status='已確認';toast('已確認申請 '+OVERVIEW[i].no,'ok');}
+  else if(type==='return'){OVERVIEW[i].status='退回';OVERVIEW[i].reason='庫存臨時調動';toast('已退回申請','warn');}
+  else if(type==='grant'){OVERVIEW[i].status='已領用';toast('已完成領用','ok');}
+  renderOverview();
+}
+function openGrant(i){
+  const r=OVERVIEW[i]||{};
+  const items=[{n:'橡皮擦',q:1,u:'個',note:'--'},{n:'原子筆',q:1,u:'支',note:'--'}];
+  document.getElementById('gr-body').innerHTML=`
+    <div class="sec-block">
+      <div class="sec-bar">基本資料</div>
+      <table class="form-kv"><tbody>
+        <tr><th>申請單號</th><td colspan="3">${r.no||''}</td></tr>
+        <tr><th>填單日期</th><td>2026/01/04 12:34:56</td><th>填單人員</th><td>10011275-洪慕藍</td></tr>
+        <tr><th>申請人員</th><td>${(r.empno||'')}-${(r.user||'')}</td><th>公司代碼</th><td>${r.company||''}</td></tr>
+        <tr><th>成本中心</th><td>${r.cc||''}</td><th>領用日期</th><td>${r.date||''}</td></tr>
+        <tr><th>聯絡電話/分機</th><td>${r.tel||''}</td><th>備註</th><td>-</td></tr>
+      </tbody></table>
+    </div>
+    <div class="sec-block">
+      <div class="sec-bar">領用項目</div>
+      <table class="item-grid"><thead><tr>
+        <th style="width:60px;">序號</th><th>品項</th><th>申請數量</th><th>單位</th><th>實際領用數量</th><th>備註</th>
+      </tr></thead><tbody>${items.map((it,k)=>`<tr>
+        <td>${k+1}</td><td>${it.n}</td><td>${it.q}</td><td>${it.u}</td>
+        <td><div class="stepper"><button onclick="aoStep(this,-1)">&minus;</button><input value="${it.q}"><button onclick="aoStep(this,1)">&plus;</button></div></td>
+        <td>${it.note}</td></tr>`).join('')}</tbody></table>
+    </div>`;
+  document.getElementById('m-grant').dataset.idx=i;
+  openModal('m-grant');
+}
+function doGrant(){
+  const i=+document.getElementById('m-grant').dataset.idx;
+  if(OVERVIEW[i])OVERVIEW[i].status='已領用';
+  closeModal('m-grant');renderOverview();toast('已完成領用','ok');
+}
+function openReport(){
+  document.querySelectorAll('input[name="rpst"]').forEach(r=>r.checked=(r.value==='已確認'));
+  document.getElementById('rp-reason-input').value='-';
+  rpToggle();openModal('m-report');
+}
+function rpToggle(){
+  const v=document.querySelector('input[name="rpst"]:checked');
+  document.getElementById('rp-reason').style.display=(v&&v.value==='退回')?'flex':'none';
+}
+function doReport(){
+  const v=document.querySelector('input[name="rpst"]:checked');
+  closeModal('m-report');
+  toast('狀態已回報：'+(v?v.value:''),'ok');
+}
+function openAddOrder(){
+  const rows=[
+    {name:'白板筆(藍)',qty:2,unit:'個',act:2,note:'--'},
+    {name:'原子筆(藍) 0.5mm',qty:1,unit:'支',act:1,note:'--'},
+  ];
+  const opts=n=>PRODUCTS.map(p=>`<option ${p.name===n?'selected':''}>${p.name}</option>`).join('');
+  document.getElementById('ao-items').innerHTML=rows.map((r,i)=>`<tr>
+    <td>${i+1}</td>
+    <td><select class="select" style="max-width:200px;">${opts(r.name)}</select></td>
+    <td><div class="stepper"><button onclick="aoStep(this,-1)">&minus;</button><input value="${r.qty}"><button onclick="aoStep(this,1)">&plus;</button></div></td>
+    <td>${r.unit}</td><td>${r.act}</td><td>${r.note}</td></tr>`).join('');
+  openModal('m-addorder');
+}
+function aoStep(btn,d){const inp=btn.parentElement.querySelector('input');inp.value=Math.max(1,(parseInt(inp.value)||1)+d);}
+function submitAddOrder(){
+  OVERVIEW.unshift({no:'OSR2026082700'+(Math.floor(Math.random()*9)+1),user:'林益凡',empno:'10011274',
+    date:'2026/08/27',company:'大成長城企業股份有限公司',cc:'1600-資訊處',tel:'#5311',
+    time:'2026/08/27 12:34',status:'未確認',reason:''});
+  closeModal('m-addorder');renderOverview();toast('補單已送出','ok');
+}
+
+/* ================= 庫存管理 ================= */
+let invFilter='all';
+document.querySelectorAll('#invFilter button').forEach(b=>b.addEventListener('click',()=>{
+  invFilter=b.dataset.f;document.querySelectorAll('#invFilter button').forEach(x=>x.classList.toggle('active',x===b));renderInventory();}));
+function renderInventory(){
+  const tb=document.querySelector('#invTable tbody');
+  const list=INVENTORY.filter(r=>invFilter==='all'||invStatus(r)===invFilter);
+  tb.innerHTML=list.map(r=>{
+    const s=invStatus(r),cls={'正常':'green','低庫存':'amber','缺貨':'red'}[s];
+    const redS=(r.stock<r.safe)?'num-red':'',redA=(r.avail<r.safe)?'num-red':'';
+    return `<tr><td><input type="checkbox" class="chk"></td>
+      <td>${r.sku}</td><td>${r.name}</td><td>${icon(r.cat).replace('width="52" height="52"','width="28" height="28"')}</td><td>${r.cat}</td>
+      <td>${r.safe}</td><td class="${redS}">${r.stock}</td><td>${r.wait}</td><td class="${redA}">${r.avail}</td>
+      <td>${r.in}</td><td>${r.out}</td>
+      <td><span class="pill s-${cls}"><span class="dot"></span>${s}</span></td>
+      <td><a class="act-link" onclick="openRestock('${r.sku}')">&#8630; 進貨</a> <a class="act-link" onclick="openEdit('${r.sku}')">&#9998; 編輯</a></td>
+      <td></td></tr>`;
+  }).join('');
+}
+function openRestock(sku){const r=INVENTORY.find(x=>x.sku===sku);
+  document.getElementById('rs-sku').textContent=r.sku;document.getElementById('rs-name').textContent=r.name;
+  document.getElementById('rs-stock').textContent=r.stock;document.getElementById('rs-img').innerHTML=(r.cat==='書寫'?penTrio():icon(r.cat).replace('width="52" height="52"','width="44" height="44"'));
+  document.getElementById('rs-qty').value=30;document.getElementById('rs-note').value='';
+  document.getElementById('m-restock').dataset.sku=sku;openModal('m-restock');}
+function doRestock(){const sku=document.getElementById('m-restock').dataset.sku;const r=INVENTORY.find(x=>x.sku===sku);
+  const q=parseInt(document.getElementById('rs-qty').value)||0;r.stock+=q;r.avail+=q;r.in+=q;
+  closeModal('m-restock');renderInventory();toast(`已進貨 ${r.name} +${q}`,'ok');}
+function openEdit(sku){const r=INVENTORY.find(x=>x.sku===sku);
+  document.getElementById('ed-sku').value=r.sku;document.getElementById('ed-name').value=r.name;
+  document.getElementById('ed-safe').value=r.safe;document.getElementById('ed-note').value='';
+  document.getElementById('m-edit').dataset.sku=sku;openModal('m-edit');}
+function doEdit(){const sku=document.getElementById('m-edit').dataset.sku;const r=INVENTORY.find(x=>x.sku===sku);
+  r.name=document.getElementById('ed-name').value;r.safe=parseInt(document.getElementById('ed-safe').value)||r.safe;
+  closeModal('m-edit');renderInventory();toast('已更新品項資訊','ok');}
+
+/* 調整庫存 */
+function openAdjust(){
+  const tb=document.querySelector('#adjTable tbody');
+  tb.innerHTML=INVENTORY.slice(0,7).map((r,i)=>`<tr>
+    <td>${i+1}</td><td>${r.sku}</td><td>${r.name}</td><td>${r.stock}</td>
+    <td><input class="input" style="width:110px;padding:6px 10px;" type="number" value="0" oninput="adjCalc(${i},${r.stock})"></td>
+    <td id="adjAfter_${i}">${r.stock}</td>
+    <td><input class="input" style="width:130px;padding:6px 10px;" value="盤點調整"></td></tr>`).join('');
+  openModal('m-adjust');
+}
+function adjCalc(i,stock){const v=parseInt(document.querySelectorAll('#adjTable tbody tr')[i].querySelector('input').value)||0;
+  document.getElementById('adjAfter_'+i).textContent=stock+v;}
+function saveAdjust(){closeModal('m-adjust');renderInventory();toast('庫存調整已儲存','ok');}
+
+/* 分類管理 tag editor */
+let catManage=['書寫','紙品','事務耗材','裝訂','其他'];
+let unitManage=['台','條','盒'];
+function openCategory(){renderTags();openModal('m-category');}
+function tagHtml(arr,type){
+  return arr.map((t,i)=>`<span class="tag-chip">${t}<span class="rm" onclick="event.stopPropagation();removeTag('${type}',${i})">&times;</span></span>`).join('')
+    +`<input class="tag-input" placeholder="輸入新增選項" onkeydown="tagKey(event,'${type}')">`;
+}
+function renderTags(){
+  document.getElementById('catTags').innerHTML=tagHtml(catManage,'cat');
+  document.getElementById('unitTags').innerHTML=tagHtml(unitManage,'unit');
+}
+function removeTag(type,i){(type==='cat'?catManage:unitManage).splice(i,1);renderTags();focusTag(type);}
+function tagKey(e,type){
+  if(e.key==='Enter'){e.preventDefault();const v=e.target.value.trim();
+    if(v){(type==='cat'?catManage:unitManage).push(v);renderTags();focusTag(type);}}
+}
+function focusTag(type){const box=document.getElementById(type==='cat'?'catTags':'unitTags');
+  const inp=box.querySelector('.tag-input');if(inp)inp.focus();}
+function saveCategory(){closeModal('m-category');toast('分類已儲存','ok');}
+
+/* 異動紀錄 */
+function openLog(){
+  const tb=document.querySelector('#logTable tbody');
+  tb.innerHTML=LOG.map((l,i)=>{const cls={'進貨':'green','領用':'blue','編輯':'amber'}[l.op];
+    return `<tr><td>${i+1}</td><td>${l.t}</td><td>${l.name}</td><td>10001275 洪慕藍</td>
+      <td><span class="pill s-${cls}"><span class="dot"></span>${l.op}</span></td>
+      <td class="${l.qty<0?'num-red':''}">${l.qty>0?l.qty:l.qty}</td><td>${l.after}</td><td>${l.note}</td></tr>`;}).join('');
+  openModal('m-log');
+}
+
+/* ================= 新增品項 ================= */
+function renderAddTable(){
+  const tb=document.querySelector('#addTable tbody');
+  tb.innerHTML=addRows.map((r,i)=>`<tr>
+    <td><input class="input" value="${r.sku}" style="width:130px;"></td>
+    <td>${r.img?icon(r.cat).replace('width="52" height="52"','width="44" height="34"'):`<button class="upload-btn">&#11015; 上傳</button>`}</td>
+    <td><input class="input" value="${r.name}" style="width:170px;"></td>
+    <td><select class="select" style="width:110px;">${CATS.map(c=>`<option ${c===r.cat?'selected':''}>${c}</option>`).join('')}</select></td>
+    <td><select class="select" style="width:80px;"><option ${r.unit==='支'?'selected':''}>支</option><option>個</option><option>包</option><option>盒</option></select></td>
+    <td><input class="input" type="number" value="${r.init}" style="width:80px;"></td>
+    <td><input class="input" type="number" value="${r.safe}" style="width:80px;"></td>
+    <td><span class="radio-inline"><label><input type="radio" name="shelf_${i}" ${r.shelf==='上架'?'checked':''}>上架</label><label><input type="radio" name="shelf_${i}" ${r.shelf==='下架'?'checked':''}>下架</label></span></td>
+    <td><button class="trash" onclick="delAddRow(${i})">&times;</button></td></tr>`).join('');
+}
+function addNewRow(){addRows.push({sku:'',name:'',cat:'書寫',unit:'支',init:30,safe:30,shelf:'上架',img:false});renderAddTable();}
+function delAddRow(i){addRows.splice(i,1);if(!addRows.length)addNewRow();else renderAddTable();}
+function submitNewItems(){toast(`已送出 ${addRows.length} 筆新品項`,'ok');setTimeout(()=>go('inventory'),700);}
+
+/* 批量匯入 */
+function openImport(){document.getElementById('importChip').style.display='none';openModal('m-import');}
+function pickFile(){document.getElementById('importChip').style.display='flex';toast('已選擇檔案','ok');}
+function clearImport(){document.getElementById('importChip').style.display='none';}
+function doImport(){closeModal('m-import');toast('批量匯入完成','ok');addRows.push({sku:'IMP-01',name:'匯入品項範例',cat:'紙品',unit:'包',init:100,safe:20,shelf:'上架',img:false});renderAddTable();}
+
+/* ================= 月報表（統計報表）================= */
+const RCO='大成長城企業股份有限公司';
+const REPORT=[
+  {co:RCO,cc:'1600-資訊處',cat:'書寫',sku:'PEN-BL-01',name:'原子筆(藍) 0.5mm',qty:200},
+  {co:RCO,cc:'1600-資訊處',cat:'書寫',sku:'PEN-BK-02',name:'原子筆(黑) 0.5mm',qty:100},
+  {co:RCO,cc:'1600-資訊處',cat:'書寫',sku:'PEN-RD-03',name:'原子筆(紅) 0.5mm',qty:100},
+  {co:RCO,cc:'1600-資訊處',cat:'書寫',sku:'PEN-BL-04',name:'原子筆(藍) 0.38mm',qty:50},
+  {co:RCO,cc:'1600-資訊處',cat:'書寫',sku:'PEN-BK-05',name:'原子筆(黑) 0.38mm',qty:30},
+  {co:RCO,cc:'1600-資訊處',cat:'書寫',sku:'PEN-RD-06',name:'原子筆(紅) 0.38mm',qty:55},
+  {co:RCO,cc:'1600-資訊處',cat:'書寫',sku:'HL-YL-01',name:'螢光筆(黃)',qty:75},
+  {co:RCO,cc:'1600-資訊處',cat:'紙品',sku:'PPR-01',name:'A4 影印紙',qty:65},
+  {co:RCO,cc:'1600-資訊處',cat:'紙品',sku:'MEMO-01',name:'便條紙',qty:10},
+  {co:RCO,cc:'1600-資訊處',cat:'事務耗材',sku:'STPL-01',name:'訂書針',qty:25},
+  {co:RCO,cc:'1120-行政服務部',cat:'書寫',sku:'PEN-BL-01',name:'原子筆(藍) 0.5mm',qty:45},
+  {co:RCO,cc:'1120-行政服務部',cat:'書寫',sku:'PEN-BK-02',name:'原子筆(黑) 0.5mm',qty:78},
+  {co:RCO,cc:'1120-行政服務部',cat:'書寫',sku:'PEN-RD-03',name:'原子筆(紅) 0.5mm',qty:38},
+  {co:RCO,cc:'1120-行政服務部',cat:'書寫',sku:'PEN-BL-04',name:'原子筆(藍) 0.38mm',qty:56},
+  {co:RCO,cc:'1120-行政服務部',cat:'書寫',sku:'PEN-BK-05',name:'原子筆(黑) 0.38mm',qty:23},
+];
+let rpChecked=REPORT.map((_,i)=>i<8);
+let rpDir=0;
+function rpSort(){rpDir=(rpDir+1)%3;renderReport();}
+function rpToggleAll(cb){rpChecked=rpChecked.map(()=>cb.checked);renderReport();}
+function rpCheck(i,v){rpChecked[i]=v;renderReport();}
+function renderReport(){
+  const co=document.getElementById('rpCo').value,cc=document.getElementById('rpCc').value;
+  let list=REPORT.map((r,i)=>({r,i})).filter(x=>(!co||x.r.co===co)&&(!cc||x.r.cc===cc));
+  if(rpDir===1)list.sort((a,b)=>a.r.qty-b.r.qty);
+  else if(rpDir===2)list.sort((a,b)=>b.r.qty-a.r.qty);
+  const tb=document.querySelector('#reportTable tbody');
+  tb.innerHTML=list.map(({r,i})=>`<tr class="${rpChecked[i]?'selected':''}">
+    <td><input type="checkbox" class="chk" ${rpChecked[i]?'checked':''} onclick="rpCheck(${i},this.checked)"></td>
+    <td>${r.co}</td><td>${r.cc}</td><td>${r.cat}</td><td>${r.sku}</td><td>${r.name}</td><td>${r.qty}</td></tr>`).join('');
+  const all=document.getElementById('rpAll'),shown=list.map(x=>x.i),c=shown.filter(i=>rpChecked[i]).length;
+  all.checked=shown.length>0&&c===shown.length; all.indeterminate=c>0&&c<shown.length;
+}
+
+/* ================= init ================= */
+renderCatList();renderOverview();updateCartBadge();
+</script>
+</body>
+</html>
